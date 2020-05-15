@@ -26,44 +26,71 @@
  *  @param tx_pwr power in dBm, -40 ... 16
  *
  */
-void encodeToRawFormat5(uint8_t* data_buffer, const ruuvi_sensor_t* const data, uint16_t acceleration_events, int8_t tx_pwr)
+
+ #define DEVICE_TYPE 2000 
+void encodeToRawFormat5(uint8_t* data_buffer, const ruuvi_sensor_t* const data, uint16_t acceleration_events, int8_t tx_pwr, uint8_t acc_detection_flag, uint32_t current_time , uint32_t previous_time)
 {
     static uint32_t packet_counter = 0;
     data_buffer[0] = RAW_FORMAT_2;
     int32_t temperature = data->temperature;
     temperature *= 2; //Spec calls for 0.005 degree resolution, bme280 gives 0.01
     if(data->temperature == TEMPERATURE_INVALID) { temperature = TEMPERATURE_INVALID; }
-    data_buffer[1] = (temperature)>>8;
-    data_buffer[2] = (temperature)&0xFF;
+    //data_buffer[1] = (temperature)>>8;
+    //data_buffer[2] = (temperature)&0xFF;
+    
+    data_buffer[1] = acc_detection_flag>>8;
+    data_buffer[2] = acc_detection_flag&0xFF;
+    
     // Humidity is reported as 1/ 400 as per spec.
     uint32_t humidity = data->humidity * 400 / 1024;
     if(data->humidity == HUMIDITY_INVALID) { humidity = HUMIDITY_INVALID; }
-    data_buffer[3] = humidity>>8;
-    data_buffer[4] = humidity&0xFF;
+    //data_buffer[3] = humidity>>8;
+    //data_buffer[4] = humidity&0xFF;
+    
+    data_buffer[3] = DEVICE_TYPE>>8;
+    data_buffer[4] = DEVICE_TYPE&0xFF;
+    
     NRF_LOG_DEBUG("Humidity is %d\r\n", humidity/400);
     uint32_t pressure = data->pressure;
     pressure = (uint16_t)((pressure >> 8) - 50000); //Scale into pa, Shift by -50000 pa as per Ruu.vi interface.
     if(data->pressure == PRESSURE_INVALID) { pressure = PRESSURE_INVALID; }
-    data_buffer[5] = (pressure)>>8;
-    data_buffer[6] = (pressure)&0xFF;
+    //data_buffer[5] = (pressure)>>8;
+    //data_buffer[6] = (pressure)&0xFF;
+    
+    data_buffer[5] = DEVICE_GROUP>>8;
+    data_buffer[6] = DEVICE_GROUP&0xFF;
+    
     data_buffer[7] = (data->accX)>>8;
     data_buffer[8] = (data->accX)&0xFF;
     data_buffer[9] = (data->accY)>>8;
     data_buffer[10] = (data->accY)&0xFF;
     data_buffer[11] = (data->accZ)>>8;
     data_buffer[12] = (data->accZ)&0xFF;
+    
+    
     //Bit-shift vbatt by 4 to fit TX PWR in
     uint16_t vbatt = data->vbat;
     vbatt -= 1600; //Bias by 1600 mV
     vbatt <<= 5;   //Shift by 5 to fit TX PWR in
-    data_buffer[13] = (vbatt)>>8;
-    data_buffer[14] = (vbatt)&0xFF; //Zeroes tx-pwr bits
+    //data_buffer[13] = (vbatt)>>8;
+    //data_buffer[14] = (vbatt)&0xFF; //Zeroes tx-pwr bits
+    
     tx_pwr += 40;
     tx_pwr /= 2;
-    data_buffer[14] |= (tx_pwr)&0x1F; //5 lowest bits for TX pwr
+    //data_buffer[14] |= (tx_pwr)&0x1F; //5 lowest bits for TX pwr
+    
+    data_buffer[13] = previous_time>>8;
+    data_buffer[14] = previous_time&0xFF; //Zeroes tx-pwr bits
+    
     data_buffer[15] = acceleration_events % 256; // 0 may indicate a multiple of 256 events, not necessarily no events
-    data_buffer[16] = packet_counter>>8;
-    data_buffer[17] = packet_counter&0xFF;
+    
+    
+    //data_buffer[16] = packet_counter>>8;
+    //data_buffer[17] = packet_counter&0xFF;
+    
+    data_buffer[16] = current_time>>8;
+    data_buffer[17] = current_time&0xFF;
+    
     packet_counter++;
     data_buffer[18] = ((NRF_FICR->DEVICEADDR[1]>>8)&0xFF) | 0xC0; //2 MSB must be 11;
     data_buffer[19] = ((NRF_FICR->DEVICEADDR[1]>>0)&0xFF);

@@ -87,6 +87,7 @@ static void on_dis_evt(ble_dis_t * p_dis, ble_dis_evt_t * p_evt)
  */
 uint32_t application_services_init(void)
 {
+
     uint32_t       err_code = NRF_SUCCESS;
 
     //NUS

@@ -23,13 +23,19 @@
 #define LEDS_ACTIVE_STATE 0
 
 #ifndef RUUVI_BOOTLOADER_WORKAROUND
-  #define BUTTONS_NUMBER 1
+  #define BUTTONS_NUMBER 4
   #define BUTTON_START   13
   #define BUTTON_1       13
+  #define BUTTON_2       14
+  #define BUTTON_3       15
+  #define BUTTON_4       16
   #define BUTTON_STOP    13
   #define BUTTON_PULL    NRF_GPIO_PIN_PULLUP
-  #define BUTTONS_LIST { BUTTON_1 }
+  #define BUTTONS_LIST { BUTTON_1, BUTTON_2, BUTTON_3, BUTTON_4 }
   #define BSP_BUTTON_0   BUTTON_1
+  #define BSP_BUTTON_1   BUTTON_2
+  #define BSP_BUTTON_2   BUTTON_3
+  #define BSP_BUTTON_3   BUTTON_4
   #define BUTTONS_ACTIVE_STATE 0
 #else
   #define BUTTONS_NUMBER 2
@@ -47,8 +53,8 @@
 
 #define RX_PIN_NUMBER   4
 #define TX_PIN_NUMBER   5
-#define RTS_PIN_NUMBER  NRF_GPIO_UNUSED
-#define CTS_PIN_NUMBER  NRF_GPIO_UNUSED
+#define RTS_PIN_NUMBER  0
+#define CTS_PIN_NUMBER  0
 #define HWFC           false
 
 #define SPIM0_SCK_PIN     29  // SPI clock

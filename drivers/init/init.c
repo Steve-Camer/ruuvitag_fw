@@ -67,6 +67,7 @@ init_err_code_t init_log(void)
  */
 init_err_code_t init_ble(void)
 {
+    NRF_LOG_INFO("init_ble \r\n")
     init_err_code_t err_code;
 
     //Enable DC/DC for BLE

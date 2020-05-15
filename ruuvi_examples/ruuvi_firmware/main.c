@@ -35,6 +35,8 @@
 #include "nrf_drv_gpiote.h"
 #include "nrf_delay.h"
 
+#include "app_uart.h"
+
 #define NRF_LOG_MODULE_NAME "MAIN"
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -65,6 +67,7 @@
 
 // Configuration
 #include "bluetooth_config.h"      // including  REVision, intervals, APP_TX_POWER
+#include "bluetooth_application_config.h"
 
 // Constants
 #define DEAD_BEEF               0xDEADBEEF    //!< Value used as error code on stack dump, can be used to identify stack location on stack unwind.
@@ -112,11 +115,46 @@ static volatile uint16_t vbat = 0;             // Update in interrupt after radi
 static uint64_t last_battery_measurement = 0;  // Timestamp of VBat update.
 static volatile bool pressed = false;          // Debounce flag
 
+/***********************************************************************NUS UART***********************************************************************/
+
+#include "ble_nus.h"
+#define UART_TX_BUF_SIZE                256                                         /**< UART TX buffer size. */
+#define UART_RX_BUF_SIZE                256                                         /**< UART RX buffer size. */
+
+
+static ble_nus_t                        m_nus;                                      /**< Structure to identify the Nordic UART Service. */
+static uint16_t                         m_conn_handle = BLE_CONN_HANDLE_INVALID;    /**< Handle of the current connection. */
+
+static ble_uuid_t                       m_adv_uuids[] = {{BLE_UUID_NUS_SERVICE, NUS_SERVICE_UUID_TYPE}};  /**< Universally unique service identifier. */
+/***********************************************************************NUS UART***********************************************************************/
+
+
 // Possible modes of the app
 #define RAWv1 0
 #define RAWv2_FAST 1
 #define RAWv2_SLOW 2
 #define DEFAULT_MODE RAWv2_FAST
+
+//acceleration sensor motion activity time
+#define MOVE_DETECT_TIME 2 // MMS
+#define MOVE_DETECT_TIME_CART 3 // MMS
+#define INACTIVITY_TIME  240 // 4 MIN
+
+uint32_t current_time_motion = 0, current_time_still = 0;
+uint32_t  previous_time_still = 1, previous_time_motion = 1, time_current_still = 0, time_current_motion= 0;
+uint8_t motion_state_duration = 0;
+
+#define MOVING_DETECT_LOW  		0
+#define MOVING_DETECT_HIGH 		1
+
+static lis2dh12_sensor_motion_time_t state;
+
+volatile uint8_t TimeoutCounter;
+
+//static bool interrupted1 = false;
+static bool interrupted2 = false;
+static void get_time_motion_duration(uint8_t time_flag);
+static void get_detection(uint8_t detection_flag);
 
 // Must be UINT32_T as flash storage operated in 4-byte chunks
 // Will get loaded from flash, this is default.
@@ -266,7 +304,8 @@ ret_code_t button_press_handler(const ruuvi_standard_message_t message)
      RED_LED_OFF;
 
      // Update mode
-     tag_mode++;
+     //tag_mode++;
+     tag_mode = RAWv2_SLOW; // Always this mode
      if(tag_mode > sizeof(advertising_rates)/sizeof(advertising_rates[0])) { tag_mode = 0; }
      app_sched_event_put (&tag_mode, sizeof(&tag_mode), change_mode);
 
@@ -274,6 +313,8 @@ ret_code_t button_press_handler(const ruuvi_standard_message_t message)
      if(APP_GATT_PROFILE_ENABLED)
      {
        app_sched_event_put (NULL, 0, become_connectable);
+     }else{
+        NRF_LOG_INFO("APP GATT PROFILE not enabled \r\n");
      }
 
      // Schedule store mode to flash
@@ -282,6 +323,28 @@ ret_code_t button_press_handler(const ruuvi_standard_message_t message)
 
   debounce = millis();
   return ENDPOINT_SUCCESS;
+}
+
+/**@brief Function for handling button events.
+ * Schedulers call to handler.
+ * Use scheduler, do not use peripherals in interrupt context (SPI/Flash writes won't complete.)
+ *
+ * @param message. A struct containing data about the event. 
+ *                 message.payload[0] has pin number (4)
+ *                 message.payload[1] has pin state, 1 if high, 0 if low.
+ */
+ret_code_t motor_button_press_handler(const ruuvi_standard_message_t message)
+{
+  // Debounce
+  NRF_LOG_INFO("Button pressed bevor debounced \r\n");
+  if(false == message.payload[1] && ((millis() - debounce) > DEBOUNCE_THRESHOLD) && !pressed)
+  {
+    NRF_LOG_INFO("Button pressed\r\n");
+    GREEN_LED_ON;
+    RED_LED_ON;
+    // Start timer to reboot tag.
+    pressed = true;
+  }
 }
 
 /**
@@ -347,8 +410,13 @@ static void updateAdvertisement(void)
 }
 
 
-static void main_sensor_task(void* p_data, uint16_t length)
+//static void main_sensor_task(void* p_data, uint16_t length)
+//{
+static void activitiy_detection(uint8_t flag)
 {
+	
+  interrupted2 = false;
+  
   // Signal mode by led color.
   if (RAWv1 == tag_mode) { RED_LED_ON; }
   else { GREEN_LED_ON; }
@@ -372,6 +440,7 @@ static void main_sensor_task(void* p_data, uint16_t length)
     bluetooth_apply_configuration();
   }
 
+#if 0
   if (bme280_available)
   {
     // Get raw environmental data.
@@ -388,21 +457,42 @@ static void main_sensor_task(void* p_data, uint16_t length)
     temp *= 25;                                          // SD returns temp * 4. Ruuvi format expects temp * 100. 4*25 = 100.
     data.temperature = temp;
   }
+ #endif
 
   if(lis2dh12_available)
   {
     // Get accelerometer data.
     lis2dh12_read_samples(&buffer, 1);
+    
+    buffer.acc_detection_flag = flag;
+    
     data.accX = buffer.sensor.x;
     data.accY = buffer.sensor.y;
     data.accZ = buffer.sensor.z;
+    
+    // set the motion duration time previous and currenttime
+   if(flag){
+		    state.previous_time = previous_time_still;
+                    state.current_time =  current_time_motion;
+	}
+	else{
+            state.previous_time = previous_time_motion;
+			state.current_time =  current_time_still;
+	}
   }
 
   switch(tag_mode)
   {
     case RAWv2_FAST:
     case RAWv2_SLOW:
-      encodeToRawFormat5(data_buffer, &data, acceleration_events, BLE_TX_POWER);
+      //encodeToRawFormat5(data_buffer, &data, acceleration_events, BLE_TX_POWER);
+       NRF_LOG_INFO("Beacon check notion \r\n"); 
+		if (state.previous_time>3){
+			encodeToRawFormat5(data_buffer, &data, acceleration_events, BLE_TX_POWER, buffer.acc_detection_flag, state.current_time , state.previous_time );
+		}
+		else{
+			encodeToRawFormat5(data_buffer, &data, acceleration_events, BLE_TX_POWER, buffer.acc_detection_flag, 0, 0);
+		}
       break;
     
     case RAWv1:
@@ -419,7 +509,15 @@ static void main_sensor_task(void* p_data, uint16_t length)
  */
 static void main_timer_handler(void * p_context)
 {
-  app_sched_event_put (NULL, 0, main_sensor_task);
+  //app_sched_event_put (NULL, 0, main_sensor_task);
+  
+  #if 1
+  if( TimeoutCounter > 0 )
+    TimeoutCounter--;
+	
+   get_detection(motion_state_duration);
+   get_time_motion_duration(motion_state_duration);
+ #endif
 }
 
 
@@ -435,6 +533,8 @@ ret_code_t lis2dh12_int2_handler(const ruuvi_standard_message_t message)
 {
   NRF_LOG_DEBUG("Accelerometer interrupt to pin 2\r\n");
   acceleration_events++;
+  
+  interrupted2 = true;
   /*
   app_sched_event_put ((void*)(&message),
                        sizeof(message),
@@ -459,6 +559,114 @@ static void on_radio_evt(bool active)
   }
 }
 
+void get_detection(uint8_t detection_flag)
+{
+	if(detection_flag){ // motion interupt detect
+		activitiy_detection(MOVING_DETECT_HIGH);
+	}
+	else{
+		activitiy_detection(MOVING_DETECT_LOW);
+	}
+}
+
+void get_time_motion_duration(uint8_t time_flag)
+{
+	if(time_flag){ // motion
+		current_time_motion = time_current_motion++;
+		previous_time_still =  current_time_still;
+		time_current_still = 1;
+		previous_time_motion = 1;
+	}
+	else{ // still
+		current_time_still = time_current_still++;
+		previous_time_motion =  current_time_motion;
+		time_current_motion= 1;
+		previous_time_still = 1;
+	}
+}
+
+/**@brief   Function for handling app_uart events.
+ *
+ * @details This function will receive a single character from the app_uart module and append it to
+ *          a string. The string will be be sent over BLE when the last character received was a
+ *          'new line' i.e '\r\n' (hex 0x0D) or if the string has reached a length of
+ *          @ref NUS_MAX_DATA_LENGTH.
+ */
+/**@snippet [Handling the data received over UART] */
+void uart_event_handle(app_uart_evt_t * p_event)
+{
+
+NRF_LOG_INFO("MAINLOG uart_event_handle \r\n");
+
+    static uint8_t data_array[255];
+    static uint8_t index = 0;
+    uint32_t       err_code;
+
+    switch (p_event->evt_type)
+    {
+
+        case APP_UART_DATA_READY:
+            UNUSED_VARIABLE(app_uart_get(&data_array[index]));
+            index++;
+
+            if ((data_array[index - 1] == '\n') || (index >= (255)))
+            {
+                err_code = ble_nus_string_send(&m_nus, data_array, index);
+                if (err_code != NRF_ERROR_INVALID_STATE)
+                {
+                    APP_ERROR_CHECK(err_code);
+                }
+
+                index = 0;
+            }
+            break;
+			case APP_UART_FIFO_ERROR:
+            APP_ERROR_HANDLER(p_event->data.error_code);
+            break;
+             case APP_UART_COMMUNICATION_ERROR:
+            APP_ERROR_HANDLER(p_event->data.error_communication);
+            break;
+        default:
+            break;
+    }
+    
+}
+/**@snippet [Handling the data received over UART] */
+
+static void nus_data_handler(ble_nus_t * p_nus, uint8_t * p_data, uint16_t length)
+{
+    for (uint32_t i = 0; i < length; i++)
+    {
+        while (app_uart_put(p_data[i]) != NRF_SUCCESS);
+    }
+    while (app_uart_put('\r') != NRF_SUCCESS);
+    while (app_uart_put('\n') != NRF_SUCCESS);
+}
+
+static void uart_init(void)
+{
+NRF_LOG_INFO("LOG uart_init \r\n");
+   uint32_t                     err_code;
+    app_uart_comm_params_t const comm_params =
+    {
+        .rx_pin_no    = RX_PIN_NUMBER,
+        .tx_pin_no    = TX_PIN_NUMBER,
+        .rts_pin_no   = RTS_PIN_NUMBER,
+        .cts_pin_no   = CTS_PIN_NUMBER,
+        .flow_control = APP_UART_FLOW_CONTROL_DISABLED,
+        .use_parity   = false,
+        .baud_rate    = UART_BAUDRATE_BAUDRATE_Baud115200
+    };
+
+    APP_UART_FIFO_INIT(&comm_params,
+                       UART_RX_BUF_SIZE,
+                       UART_TX_BUF_SIZE,
+                       uart_event_handle,
+                       APP_IRQ_PRIORITY_LOWEST,
+                       err_code);
+    APP_ERROR_CHECK(err_code);
+}
+
 /**  This is where it all starts ++++++++++++++++++++++++++++++++++++++++++ 
  main is entered as a result of one of SEVERAL events:
   - Normal startup from press of reset button.
@@ -475,12 +683,14 @@ static void on_radio_evt(bool active)
 */
 int main(void)
 {
+
    // LEDs first (they're easy and cannot fail)  drivers/init/init.c
   init_leds();
   RED_LED_ON;
 
   if( init_log() ) { init_status |=LOG_FAILED_INIT; }
   else { NRF_LOG_INFO("LOG initialized \r\n"); } // subsequent initializations assume log is working
+
 
   // start watchdog now in case program hangs up.
   // watchdog_default_handler logs error and resets the tag.
@@ -493,12 +703,15 @@ int main(void)
   if( vbat < BATTERY_MIN_V ) { init_status |=BATTERY_FAILED_INIT; }
   else NRF_LOG_INFO("BATTERY initalized \r\n"); 
 
+lis2dh12_available = true;
+#if 1
   if(init_lis2dh12() == NRF_SUCCESS )
   {
     lis2dh12_available = true;
     NRF_LOG_INFO("Accelerometer initialized \r\n");  
   }
   else { init_status |= ACC_INT_FAILED_INIT; }
+#endif 
 
   if(init_bme280() == NRF_SUCCESS )
   {
@@ -563,7 +776,16 @@ int main(void)
   if( init_rtc() ) { init_status |= RTC_FAILED_INIT; }
   else { NRF_LOG_INFO("RTC initialized \r\n"); }
 
-  // Configure lis2dh12
+#if 0
+   // Enable Low-To-Hi rising edge trigger interrupt on nRF52 for Mobjet Motor Control.
+    if (pin_interrupt_enable(BSP_BUTTON_3, NRF_GPIOTE_POLARITY_LOTOHI, NRF_GPIO_PIN_NOPULL, motor_button_press_handler) )
+    {
+      init_status |= ACC_INT_FAILED_INIT;
+    }
+ #endif
+
+#if 1
+  // Configure lis2dh12 Original
   if (lis2dh12_available)    
   {
     lis2dh12_reset(); // Clear memory.
@@ -580,13 +802,15 @@ int main(void)
     lis2dh12_set_scale(LIS2DH12_SCALE);
     lis2dh12_set_sample_rate(LIS2DH12_SAMPLERATE_RAWv1);
     lis2dh12_set_resolution(LIS2DH12_RESOLUTION);
-
     lis2dh12_set_activity_interrupt_pin_2(LIS2DH12_ACTIVITY_THRESHOLD);
     NRF_LOG_INFO("Accelerometer configuration done \r\n");
   }
+#endif 
+  
   if(bme280_available)
   {
     // oversampling must be set for each used sensor.
+   #if 0
     bme280_set_oversampling_hum  (BME280_HUMIDITY_OVERSAMPLING);
     bme280_set_oversampling_temp (BME280_TEMPERATURE_OVERSAMPLING);
     bme280_set_oversampling_press(BME280_PRESSURE_OVERSAMPLING);
@@ -594,6 +818,7 @@ int main(void)
     bme280_set_interval(BME280_DELAY);
     bme280_set_mode(BME280_MODE_NORMAL);
     NRF_LOG_INFO("BME280 configuration done \r\n");
+    #endif
   }
 
   // Enter stored mode after boot - or default mode if store mode was not found
@@ -638,20 +863,43 @@ int main(void)
 
   // Wait for sensors to take first sample
   nrf_delay_ms(1000);
+
   // Get first sample from sensors, set fast advertising start counter
   fast_advertising_start = millis();
-  app_sched_event_put (NULL, 0, main_sensor_task);
+  //app_sched_event_put (NULL, 0, main_sensor_task);
   app_sched_execute();
+  
+  uart_init();
 
   // Start advertising 
   bluetooth_advertising_start(); 
   NRF_LOG_INFO("Advertising started\r\n");
 
   // Enter main loop. Executes tasks scheduled by timers and interrupts.
+
   for (;;)
   {
     app_sched_execute();
     // Sleep until next event.
     power_manage();
+    
+		if(interrupted2)
+		{	
+                                NRF_LOG_INFO("Interrupt \n");
+				#ifdef CART
+					TimeoutCounter = MOVE_DETECT_TIME_CART;
+				#else
+					TimeoutCounter = MOVE_DETECT_TIME;
+				#endif
+				motion_state_duration = 1;
+		}
+		else 
+		{	
+			if(!TimeoutCounter)
+			{
+				motion_state_duration = 0;
+                                NRF_LOG_INFO("Timeoutr \n");
+			}
+		}
   }
 }

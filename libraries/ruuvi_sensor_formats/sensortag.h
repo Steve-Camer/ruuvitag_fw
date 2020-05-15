@@ -45,6 +45,33 @@
 #define RAW1_PRESSURE_INVALID     0
 #define RAW1_ACCELERATION_INVALID 0
 
+
+#define DEVICE_GROUP 					50
+
+#ifdef  TWIXTER
+#define DEVICE_TYPE 					2000
+#define LIS2DH12_SCALE LIS2DH12_SCALE8G
+#elif defined SPRINT
+#define DEVICE_TYPE 					3000
+#define LIS2DH12_SCALE LIS2DH12_SCALE8G
+#elif defined CART
+#define DEVICE_TYPE 					1000
+#define LIS2DH12_SCALE LIS2DH12_SCALE2G
+#elif defined JETVAC
+#define DEVICE_TYPE 					27155           
+#define LIS2DH12_SCALE LIS2DH12_SCALE8G
+#elif defined KEHRSET
+#define DEVICE_TYPE  					5000
+#define LIS2DH12_SCALE LIS2DH12_SCALE8G
+#elif defined WESTE
+#define DEVICE_TYPE 					4000
+#define LIS2DH12_SCALE LIS2DH12_SCALE8G
+#endif
+
+#define STR(x) #x
+#define STRING(x) STR(x) 
+//#pragma message("DEVICE TYPE " STRING(DEVICE_TYPE))
+
 // Sensor values
 typedef struct 
 {
@@ -81,7 +108,8 @@ void encodeToRawFormat3(uint8_t* data_buffer, const ruuvi_sensor_t* const data);
  *  @param acceleration_events counter of acceleration events. Events are configured by application, "value exceeds 1.1 G" recommended.
  *  @param vbatt Voltage of battery in millivolts
  */
-void encodeToRawFormat5(uint8_t* data_buffer,  const ruuvi_sensor_t* const data, uint16_t acceleration_events, int8_t tx_pwr);
+//void encodeToRawFormat5(uint8_t* data_buffer,  const ruuvi_sensor_t* const data, uint16_t acceleration_events, int8_t tx_pwr);
+void encodeToRawFormat5(uint8_t* data_buffer, const ruuvi_sensor_t* const data, uint16_t acceleration_events, int8_t tx_pwr, uint8_t acc_detection_flag, uint32_t current_time , uint32_t previous_time);
 
 
 /**

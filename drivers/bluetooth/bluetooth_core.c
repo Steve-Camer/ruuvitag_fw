@@ -297,6 +297,8 @@ static void advertising_init(void)
 
 ret_code_t bluetooth_stack_init(void)
 {
+
+NRF_LOG_INFO("bluetooth_stack_init: \r\n");   
     uint32_t err_code = NRF_SUCCESS;
 
     nrf_clock_lf_cfg_t clock_lf_cfg = NRF_CLOCK_LFCLKSRC;

@@ -271,7 +271,7 @@ CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin --short-enums 
 # generate dependency output file
 CFLAGS += -MP -MD
-
+CFLAGS += -D$(DEVICE_TYPE)
 # C++ flags common to all targets
 CXXFLAGS += \
 

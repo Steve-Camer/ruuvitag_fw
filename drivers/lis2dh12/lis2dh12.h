@@ -32,10 +32,27 @@ typedef struct __attribute__((packed))
     int16_t z;
 }acceleration_t;
 
+
+/**
+ * if the beacon is currently still
+ * "current" will state how long it's been still 
+ * and "previous" will state how long it's previously been in motion before it stopped moving
+ * 
+ * if the beacon is currently motion
+ * "current" will state how long it's been motion 
+ * and "previous" will state how long it's previously been in still before it stopped still
+ * */
+typedef struct
+{
+	uint32_t previous_time;
+    uint32_t current_time;
+}lis2dh12_sensor_motion_time_t;
+
 /** Union to split raw data to values for each axis */
 typedef union
 {
   uint8_t raw[sizeof(acceleration_t)];
+  uint8_t acc_detection_flag;
   acceleration_t sensor;
 }lis2dh12_sensor_buffer_t;
 
