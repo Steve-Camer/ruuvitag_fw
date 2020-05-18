@@ -1,9 +1,8 @@
 <!DOCTYPE CrossStudio_Session_File>
 <session>
  <Bookmarks/>
- <Breakpoints groups="Breakpoints;V7M Exceptions" active_group="Breakpoints">
-  <BreakpointListItem trigger="" line="368" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../../../drivers/bluetooth/bluetooth_core.c" useHWbreakpoint="false"/>
-  <Exceptions set="MemManage;UsageFault_Coprocessor;UsageFault_CheckingError;UsageFault_StateError;BusFault;ExceptionEntryReturnFault;HardFault"/>
+ <Breakpoints groups="Breakpoints" active_group="Breakpoints">
+  <BreakpointListItem trigger="" line="135" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/uart/app_uart_fifo.c" useHWbreakpoint="false"/>
  </Breakpoints>
  <ExecutionProfileWindow/>
  <FrameBufferWindow>
@@ -80,7 +79,7 @@
    <Watchpoint expression="NUS_BASE_UUID" name="NUS_BASE_UUID" radix="16" linenumber="0" filename="../ses"/>
    <Watchpoint expression="p_nus" name="p_nus" radix="-1" linenumber="0" filename="../ses"/>
    <Watchpoint expression="ble_uuid.uuid" name="ble_uuid.uuid" radix="-1" linenumber="0" filename="../ses"/>
-   <Watchpoint expression="p_comm_params" name="p_comm_params" radix="-1" linenumber="0" filename=""/>
+   <Watchpoint expression="p_comm_params" name="p_comm_params" radix="-1" linenumber="0" filename="../ses"/>
   </Watches>
  </Watch1>
  <Watch2>
@@ -93,8 +92,8 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="14" y="733" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="720" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="16" y="49" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/nrf_nordic_pininterrupt/pin_interrupt.c" selected="0" top="33" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="3" y="719" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="686" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="49" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/nrf_nordic_pininterrupt/pin_interrupt.c" selected="0" top="33" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="7" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/lis2dh12/lis2dh12_acceleration_handler.h" selected="0" top="0" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="4" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/bme280/bme280_temperature_handler.h" selected="0" top="0" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="68" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/init/init.h" selected="0" top="43" codecName="Default"/>
@@ -109,7 +108,7 @@
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="1" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../bluetooth_application_config.h" selected="0" top="0" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="57" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../sdk_application_config.h" selected="0" top="34" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="4274" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/init/sdk_config.h" selected="0" top="4263" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="91" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/init/init.c" selected="0" top="70" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="91" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/init/init.c" selected="0" top="69" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_board_config.h" selected="0" top="0" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="3" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/bsp_board_config.h" selected="0" top="0" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="4" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/bluetooth_board_config.h" selected="0" top="0" codecName="Default"/>
@@ -117,17 +116,17 @@
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="76" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/bsp/bsp_config.h" selected="0" top="82" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="55" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../bsp/ruuvitag_b.h" selected="0" top="36" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/bme280/bme280_temperature_handler.c" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="533" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/bluetooth/bluetooth_core.c" selected="0" top="366" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="385" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/bluetooth/bluetooth_core.c" selected="0" top="363" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="68" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/bluetooth/eddystone.c" selected="0" top="22" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="22" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/bluetooth/bluetooth_core.h" selected="0" top="22" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="174" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/ble/ble_services/ble_dfu/ble_dfu.c" selected="0" top="144" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="558" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../sdk_overrides/ble_advdata.c" selected="0" top="527" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="53" y="121" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/ble/ble_services/ble_nus/ble_nus.c" selected="0" top="121" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="9" y="87" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../ble_services/application_service_if.c" selected="0" top="69" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="121" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/ble/ble_services/ble_nus/ble_nus.c" selected="0" top="121" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="87" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../ble_services/application_service_if.c" selected="0" top="69" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="172" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/ble/ble_services/ble_dis/ble_dis.c" selected="0" top="155" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="167" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/bluetooth/ble_bulk_transfer.c" selected="0" top="140" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="156" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/bluetooth/ble_bulk_transfer.c" selected="1" top="140" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="198" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../sdk_overrides/app_button.c" selected="0" top="176" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="182" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/uart/app_uart_fifo.c" selected="0" top="167" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="137" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/uart/app_uart_fifo.c" selected="0" top="117" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="40" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/drivers_nrf/uart/nrf_drv_uart.c" selected="0" top="31" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="232" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/drivers_nrf/uart/nrf_drv_uart.h" selected="0" top="207" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="118" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../drivers/bluetooth/ble_event_handlers.c" selected="0" top="103" codecName="Default"/>
@@ -139,13 +138,13 @@
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="61" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/log/src/nrf_log_backend_serial.c" selected="0" top="61" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="53" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/uart/retarget.c" selected="0" top="32" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="59" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/util/nordic_common.h" selected="0" top="37" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="209" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/uart/app_uart.h" selected="0" top="89" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="158" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/uart/app_uart.h" selected="0" top="128" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="117" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/softdevice/common/softdevice_handler/softdevice_handler.c" selected="0" top="98" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="46" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/fifo/app_fifo.c" selected="0" top="36" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="44" y="159" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/drivers_nrf/delay/nrf_delay.h" selected="0" top="153" codecName=""/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="389" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/drivers_nrf/spi_master/nrf_drv_spi.c" selected="0" top="385" codecName=""/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="30" y="166" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/timer/app_timer.c" selected="0" top="156" codecName=""/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="1639" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/toolchain/cmsis/include/core_cm4.h" selected="0" top="1615" codecName=""/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="166" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/drivers_nrf/delay/nrf_delay.h" selected="0" top="153" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="389" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/drivers_nrf/spi_master/nrf_drv_spi.c" selected="0" top="385" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="166" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/libraries/timer/app_timer.c" selected="0" top="156" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="1561" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../nRF5_SDK_12.3.0_d7731ad/components/toolchain/cmsis/include/core_cm4.h" selected="0" top="1537" codecName="Default"/>
  </Files>
  <ARMCrossStudioWindow activeProject="ruuvitag_fw" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="nrf52832_xxaa" sessionSettings="" debugSearchFileMap="C:/Users/woja.NVLSI/Documents/nfc-library/private/nfc_t2t_lib/nfc_t2t_lib.c&#xa;" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="3711"/>
 </session>

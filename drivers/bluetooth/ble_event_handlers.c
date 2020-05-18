@@ -13,7 +13,8 @@
 #include "bluetooth_config.h"
 #include "app_scheduler.h"
 
-#if APPLICATION_GATT
+//#if APPLICATION_GATT OLD
+#if APP_GATT_PROFILE_ENABLED 
 #include "application_ble_event_handlers.h"
 #endif
 
@@ -333,7 +334,8 @@ void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     on_ble_evt(p_ble_evt);
     nrf_ble_qwr_on_ble_evt(&m_qwr, p_ble_evt);
 
-#if APPLICATION_GATT
+//#if APPLICATION_GATT OLD
+#if APP_GATT_PROFILE_ENABLED 
     application_on_ble_evt(p_ble_evt);
 #endif
 }

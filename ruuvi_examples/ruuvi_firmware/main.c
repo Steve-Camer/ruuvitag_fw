@@ -118,6 +118,7 @@ static volatile bool pressed = false;          // Debounce flag
 /***********************************************************************NUS UART***********************************************************************/
 
 #include "ble_nus.h"
+
 #define UART_TX_BUF_SIZE                256                                         /**< UART TX buffer size. */
 #define UART_RX_BUF_SIZE                256                                         /**< UART RX buffer size. */
 
@@ -588,7 +589,8 @@ void get_time_motion_duration(uint8_t time_flag)
 /**@brief   Function for handling app_uart events.
  *
  * @details This function will receive a single character from the app_uart module and append it to
- *          a string. The string will be be sent over BLE when the last character received was a
+ *          a string. The string will be be sent over BLE when the last cha
+ racter received was a
  *          'new line' i.e '\r\n' (hex 0x0D) or if the string has reached a length of
  *          @ref NUS_MAX_DATA_LENGTH.
  */
@@ -603,8 +605,7 @@ NRF_LOG_INFO("MAINLOG uart_event_handle \r\n");
     uint32_t       err_code;
 
     switch (p_event->evt_type)
-    {
-
+    { 
         case APP_UART_DATA_READY:
             UNUSED_VARIABLE(app_uart_get(&data_array[index]));
             index++;
@@ -620,11 +621,13 @@ NRF_LOG_INFO("MAINLOG uart_event_handle \r\n");
                 index = 0;
             }
             break;
-			case APP_UART_FIFO_ERROR:
-            APP_ERROR_HANDLER(p_event->data.error_code);
+            
+            case APP_UART_FIFO_ERROR:
+            //APP_ERROR_HANDLER(p_event->data.error_code);
             break;
-             case APP_UART_COMMUNICATION_ERROR:
-            APP_ERROR_HANDLER(p_event->data.error_communication);
+            
+        case APP_UART_COMMUNICATION_ERROR:
+            //APP_ERROR_HANDLER(p_event->data.error_communication);
             break;
         default:
             break;
@@ -635,6 +638,7 @@ NRF_LOG_INFO("MAINLOG uart_event_handle \r\n");
 
 static void nus_data_handler(ble_nus_t * p_nus, uint8_t * p_data, uint16_t length)
 {
+NRF_LOG_INFO("Received data from BLE NUS. Writing data on UART.");
     for (uint32_t i = 0; i < length; i++)
     {
         while (app_uart_put(p_data[i]) != NRF_SUCCESS);
@@ -642,6 +646,7 @@ static void nus_data_handler(ble_nus_t * p_nus, uint8_t * p_data, uint16_t lengt
     while (app_uart_put('\r') != NRF_SUCCESS);
     while (app_uart_put('\n') != NRF_SUCCESS);
 }
+
 
 static void uart_init(void)
 {
